@@ -4,32 +4,11 @@ from bs4 import  BeautifulSoup
 import urllib.request
 # 1. 导入Python SSL处理模块
 import ssl
-#
-import pymysql
+
 #
 import  time
 
-import  sched
-
-# 创建连接
-#db = pymysql.connect(host='192.168.40.201', port=3306,user='root', password='amdinzazd', db='mydata', charset='utf8')
-db = pymysql.connect(host='192.168.40.105', port=3306,user='root', password='oracle', db='mydata', charset='utf8')
-# 创建游标对象
-cursor = db.cursor()
-
-def insrt_mysql(data):
-    try:
-        if len(data):
-            print(data)
-            cursor.execute(
-                'insert into price_silver_time(price_silver,get_time,tag_time,tag_info,tag_cfd,tag_usd,tag_money)values(%s,%s,%s,%s,%s,%s,%s)',
-                data)
-            db.commit()
-    except Exception as err:
-        print(err)
-
-
-
+import GetPrice_ICBC
 
 
 def get_request():
@@ -65,8 +44,6 @@ def get_request():
     except Exception as err:
         print(err)
 
-
-
 def get_html(res_):
 
     try:
@@ -78,7 +55,6 @@ def get_html(res_):
         return soup
     except Exception as err:
         print(err)
-
 
 def get_price(soup):
     try:
@@ -108,26 +84,27 @@ def get_tag(soup):
     except Exception as err:
         print(err)
 
+def return_investing():
+    try:
+        res_ = get_request()
 
-if __name__ == '__main__':
+        soup = get_html(res_)
 
-    while True:
-        try:
-            res_ = get_request()
+        investing_data = get_price(soup)
+        #tag  = get_tag(soup)
+        return investing_data
+    except Exception as err:
+        print(err)
 
-            soup = get_html(res_)
+def return_investing_tag():
+    try:
+        res_ = get_request()
 
-            data = get_price(soup)
+        soup = get_html(res_)
 
-            tag_info=get_tag(soup)
-            # print(data)
-            # print(tag_info)
-
-            sta_tag = '实时数据' in tag_info
-            if('实时数据' in tag_info):
-                insrt_mysql(data)
-        except Exception as err:
-            print(err)
-
-    time.sleep(10)
+        #investing_data = get_price(soup)
+        tag  = get_tag(soup)
+        return tag
+    except Exception as err:
+        print(err)
 
